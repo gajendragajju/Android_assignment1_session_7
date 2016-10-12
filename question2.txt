@@ -1,0 +1,53 @@
+question:-2)What is the use of OnUpgrade function in SQLiteOpenHelper class?
+
+answer:) // Creating Tables
+@Override
+public void onCreate(SQLiteDatabase db) {
+    String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
+            + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
+            + KEY_PH_NO + " TEXT" + ")";
+    db.execSQL(CREATE_CONTACTS_TABLE);
+}
+
+// Upgrading database
+@Override
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    // Drop older table if existed
+    db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+
+    // Create tables again
+    onCreate(db);
+}
+
+onUpgrade is basically for handling new db changes(could be new columns addition,table addition) for any new version of your app.
+Droping the table is not always necessary in onUpgrade it all depends on what your use case is. 
+If the requirment is to not to persists the data from your older version of app then drop should help,
+but if its like changing schema then it should only have alter scripts.
+
+Upgrade means changes have been made to the database schema(version numbers are different) and it needs to be upgraded. 
+Dropping the table and recreating is one way to do that. You could also issue "alter table" statements.
+
+1) The purpose of onUpgrade is to manage a new database structure. You could start you app with simple features, 
+then you need for instance to add a new column, so you need to increase the version of your database from 1 to 2 and in 
+onUpgrade give the instruction to add a new column, so that if the user update the app, the new column become added.
+
+2) onUpgrade is called when you have a new version of your database and you incremented the int number in the super 
+method( here is 1, so you eventually change it to 2)
+
+ public static class DatabaseHelper extends SQLiteOpenHelper{
+    DatabaseHelper(Context context){
+        super (context,DATABASE_NAME,null,1);
+    }
+
+
+3) We Drop the table and recreate, because to modify the table (example for adding a new column that fits a new feature) a 
+logic way to proceed could be, before to "destroy"/DROP the table and then create a new one with all the data. 
+But this can be not the way to go although recreating the data could mean that the id numbers will be consecutive
+( usually are not consecutive: you could have 1, 2, and..4 because 3 has been deleted),
+ hence dropping and then creating the table again, and eventually loading the previous data you could have this id consistency. 
+Sometimes you may want to use ALTER instead of DROP.  
+
+
+
+
+

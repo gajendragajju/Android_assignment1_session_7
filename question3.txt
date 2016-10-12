@@ -1,0 +1,9 @@
+question:3)How to show SQLite database table information in Android application what is the best way to do it?
+
+answer:)the best way to use table layout with cursor.
+
+explanation:-
+  
+showing data base information will be better suited with table layout.
+since table layout is not an adapter view,you can not use cursor adapter with
+it.so use table layout with cursor to show table information.
